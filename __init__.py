@@ -61,10 +61,11 @@ class SendToWebhook:
         results = list()
 
         images = list()
+        metadata = None
+
         for (batch_number, image) in enumerate(images):
             i = 255. * image.cpu().numpy()
             img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
-            metadata = None
             if not args.disable_metadata:
                 metadata = PngInfo()
                 if prompt is not None:
