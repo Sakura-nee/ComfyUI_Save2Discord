@@ -5,6 +5,7 @@ import requests
 from PIL import Image
 import io
 import random
+import json
 
 import folder_paths
 
