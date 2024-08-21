@@ -27,12 +27,13 @@ class SendToWebhook:
         }
 
     RETURN_TYPES = ()
-    OUTPUT_NODE = True
+    OUTPUT_NODE = False
 
     CATEGORY = "image"
     FUNCTION = "save_images"
 
     def post(self, image_paths, metadata, webhook_url: str, name: str = "ComfyUI"):
+        print(f"{image_paths}")
         try:
             msg_content = f"```{metadata}```"
             files = {}
@@ -80,7 +81,7 @@ class SendToWebhook:
             file = f"{filename_with_batch_num}_{counter:05}_.png"
 
             img.save(os.path.join(full_output_folder, file), pnginfo=metadata, compress_level=self.compress_level)
-            images.apped(os.path.join(full_output_folder, file))
+            images.append(os.path.join(full_output_folder, file))
 
             results.append({
                 "filename": file,
