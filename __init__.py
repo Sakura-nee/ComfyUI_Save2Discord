@@ -38,7 +38,7 @@ class SendToWebhook:
         try:
             msg_content = f"```{metadata}```"
             files = {}
-            for i, image_path in enumerate(image_paths):
+            for i, image in enumerate(image_paths):
                 image_bytes = io.BytesIO()
                 image.save(image_bytes, format='PNG')
                 image_bytes.seek(0)
