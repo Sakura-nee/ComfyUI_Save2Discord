@@ -3,6 +3,7 @@ import os
 import numpy as np
 import requests
 from PIL import Image
+import io
 
 import folder_paths
 
@@ -53,7 +54,7 @@ class SendToWebhook:
         except Exception as err:
             return False
 
-    def save_images(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None, webhook_url=None, webhook_name="ComfyUI"):
+    def save_image(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None, webhook_url=None, webhook_name="ComfyUI"):
         filename_prefix += self.prefix_append
         full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir, images[0].shape[1], images[0].shape[0])
         results = list()
