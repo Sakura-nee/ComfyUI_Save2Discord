@@ -64,7 +64,7 @@ class SendToWebhook:
         container = []
 
         if prompt is not None:
-            metadata = json.dumps(prompt)
+            metadata = json.dumps(prompt, indent=2)
 
         for image in images:
             array = 255.0 * image.cpu().numpy()
