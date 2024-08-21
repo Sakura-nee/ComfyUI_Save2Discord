@@ -56,6 +56,7 @@ class SendToWebhook:
                 return False
 
         except Exception as err:
+            print(err)
             return False
 
     def save_images(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None, webhook_url=None, webhook_name="ComfyUI"):
@@ -80,6 +81,8 @@ class SendToWebhook:
             filename_with_batch_num = filename.replace("%batch_num%", str(batch_number))
             file = f"{filename_with_batch_num}_{counter:05}_.png"
 
+            print(os.path.join(full_output_folder, file), file)
+
             img.save(os.path.join(full_output_folder, file), pnginfo=metadata, compress_level=self.compress_level)
             images.append(os.path.join(full_output_folder, file))
 
@@ -93,7 +96,7 @@ class SendToWebhook:
         if self.post(images, metadata, webhook_url, webhook_name):
             print(f"Image sent to discord")
             return ("Yay! You did it!", )
-            
+
         return ("Failed :(", )
 
 # Add this new node to the dictionary of all nodes
