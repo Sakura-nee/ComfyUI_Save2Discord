@@ -39,7 +39,7 @@ class SendToWebhook:
             files = {}
             for i, image in enumerate(image_paths):
                 image_bytes = io.BytesIO()
-                image.save(image_bytes, format='PNG', pnginfo=metadata, compress_level=self.compress_level)
+                image.save(image_bytes, format='PNG', compress_level=self.compress_level)
                 image_bytes.seek(0)
                 files[f"image{i+1}"] = (f"image{i+1}.png", image_bytes, 'image/png')
 
