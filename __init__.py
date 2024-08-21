@@ -28,6 +28,7 @@ class SendToWebhook:
 
     RETURN_TYPES = ()
     OUTPUT_NODE = True
+    
     CATEGORY = "image"
     FUNCTION = "save_images"
 
@@ -87,8 +88,8 @@ class SendToWebhook:
             })
             counter += 1
 
-        if self.post(images, metadata, webhook_url, webhook_name): return { "ui": { "text": "Yay! You did it!" } }
-        return return { "ui": { "text": "Failed :(" } }
+        if self.post(images, metadata, webhook_url, webhook_name):  return ("Yay! You did it!", )
+        return ("Failed :(", )
 
 # Add this new node to the dictionary of all nodes
 NODE_CLASS_MAPPINGS = {
