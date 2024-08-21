@@ -5,6 +5,7 @@ import requests
 from PIL import Image
 import io
 
+from comfy.cli_args import args
 import folder_paths
 
 class SendToWebhook:
@@ -28,7 +29,7 @@ class SendToWebhook:
     RETURN_TYPES = ("STRING",)
     OUTPUT_NODE = True
     CATEGORY = "image"
-    FUNCTION = "save_image"
+    FUNCTION = "save_images"
 
     def post(self, images, metadata, webhook_url: str, name: str = "ComfyUI"):
         try:
@@ -54,7 +55,7 @@ class SendToWebhook:
         except Exception as err:
             return False
 
-    def save_image(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None, webhook_url=None, webhook_name="ComfyUI"):
+    def save_images(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None, webhook_url=None, webhook_name="ComfyUI"):
         filename_prefix += self.prefix_append
         full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir, images[0].shape[1], images[0].shape[0])
         results = list()
@@ -85,8 +86,8 @@ class SendToWebhook:
             })
             counter += 1
 
-        if self.post(images, metadata, webhook_url, webhook_name) return ("Yay! You did it!", )
-        return  ("Failed :(", )
+        if self.post(images, metadata, webhook_url, webhook_name): return ("Yay! You did it!", )
+        return ("Failed :(", )
 
 # Add this new node to the dictionary of all nodes
 NODE_CLASS_MAPPINGS = {
