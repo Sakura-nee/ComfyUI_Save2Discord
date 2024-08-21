@@ -4,6 +4,7 @@ import numpy as np
 import requests
 from PIL import Image
 import io
+import random
 
 import folder_paths
 
