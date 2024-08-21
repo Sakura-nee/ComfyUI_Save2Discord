@@ -28,26 +28,27 @@ class SendToWebhook:
 
     RETURN_TYPES = ()
     OUTPUT_NODE = True
-    
+
     CATEGORY = "image"
     FUNCTION = "save_images"
 
-    def post(self, images, metadata, webhook_url: str, name: str = "ComfyUI"):
+    def post(self, image_paths, metadata, webhook_url: str, name: str = "ComfyUI"):
         try:
             msg_content = f"```{metadata}```"
             files = {}
-            for i, image in enumerate(images):
-                image_bytes = io.BytesIO()
-                image.save(image_bytes, format='PNG')
-                image_bytes.seek(0)
-                files[f"image{i+1}"] = (f"image{i+1}.png", image_bytes, 'image/png')
+            for i, image_path in enumerate(image_paths):
+                with Image.open(image_path) as image:
+                    image_bytes = io.BytesIO()
+                    image.save(image_bytes, format='PNG')
+                    image_bytes.seek(0)
+                    files[f"image{i+1}"] = (f"image{i+1}.png", image_bytes, 'image/png')
 
             payload_data = {
                 'content': msg_content,
                 'username': name,
             }
 
-            response = requests.post("https://discord.com/api/webhooks/1261051114460286996/KKnJaCDvAcOebkcuGYQyg0_EvT6uILr6zYZIZ0WWOW1dVxnUB2Ypu1PJa1wTllkvSXcZ", files=files, data=payload_data)
+            response = requests.post(webhook_url, files=files, data=payload_data)
             if response.status_code == 200:
                 return True
             else:
@@ -78,9 +79,9 @@ class SendToWebhook:
             filename_with_batch_num = filename.replace("%batch_num%", str(batch_number))
             file = f"{filename_with_batch_num}_{counter:05}_.png"
 
-            images.append(img)
-
             img.save(os.path.join(full_output_folder, file), pnginfo=metadata, compress_level=self.compress_level)
+            images.apped(os.path.join(full_output_folder, file))
+
             results.append({
                 "filename": file,
                 "subfolder": subfolder,
