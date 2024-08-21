@@ -52,6 +52,7 @@ class SendToWebhook:
             if response.status_code == 200:
                 return True
             else:
+                print(f"ERROR:", response.text)
                 return False
 
         except Exception as err:
