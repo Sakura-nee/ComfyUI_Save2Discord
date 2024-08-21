@@ -5,27 +5,26 @@ import requests
 from PIL import Image
 import io
 
-from comfy.cli_args import args
 import folder_paths
 
 class SendToWebhook:
     def __init__(self):
-        self.output_dir = folder_paths.get_output_directory()
-        self.type = "output"
-        self.prefix_append = ""
+        self.output_dir = folder_paths.get_temp_directory()
+        self.type = "temp"
+        self.prefix_append = "_temp_" + ''.join(random.choice("abcdefghijklmnopqrstupvxyz") for x in range(5))
         self.compress_level = 4
 
     @classmethod
     def INPUT_TYPES(s):
-        return {
-            "required": {
-                "images": ("IMAGE",),
-                "filename_prefix": ("STRING", {"default": "ComfyUI"}),
-                "webhook_name": ("STRING", {"default": "ComfyUI"}),
-                "webhook_url": ("STRING", {"default": "https://discord.com/api/webhooks/YOUR_WEBHOOK_HASH"}),
-            },
-        }
-
+        return {"required":
+                    {
+                        "images": ("IMAGE", ),
+                        "webhook_name": ("STRING", {"default": "ComfyUI"}),
+                        "webhook_url": ("STRING", {"default": "https://discord.com/api/webhooks/YOUR_WEBHOOK_HASH"}),
+                    },
+                    "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+                }
+    
     RETURN_TYPES = ()
     OUTPUT_NODE = True
 
@@ -38,11 +37,10 @@ class SendToWebhook:
             msg_content = f"```{metadata}```"
             files = {}
             for i, image_path in enumerate(image_paths):
-                with Image.open(image_path) as image:
-                    image_bytes = io.BytesIO()
-                    image.save(image_bytes, format='PNG')
-                    image_bytes.seek(0)
-                    files[f"image{i+1}"] = (f"image{i+1}.png", image_bytes, 'image/png')
+                image_bytes = io.BytesIO()
+                image.save(image_bytes, format='PNG')
+                image_bytes.seek(0)
+                files[f"image{i+1}"] = (f"image{i+1}.png", image_bytes, 'image/png')
 
             payload_data = {
                 'content': msg_content,
@@ -59,41 +57,20 @@ class SendToWebhook:
             print(err)
             return False
 
-    def save_images(self, images, filename_prefix="ComfyUI", prompt=None, extra_pnginfo=None, webhook_url=None, webhook_name="ComfyUI"):
-        filename_prefix += self.prefix_append
-        full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir, images[0].shape[1], images[0].shape[0])
-        results = list()
-
-        images = list()
+    def save_images(self, images, webhook_name, webhook_url, prompt=None, extra_pnginfo=None):
         metadata = None
+        container = []
 
-        for (batch_number, image) in enumerate(images):
-            i = 255. * image.cpu().numpy()
-            img = Image.fromarray(np.clip(i, 0, 255).astype(np.uint8))
-            if not args.disable_metadata:
-                metadata = PngInfo()
-                if prompt is not None:
-                    metadata.add_text("prompt", json.dumps(prompt))
-                if extra_pnginfo is not None:
-                    for x in extra_pnginfo:
-                        metadata.add_text(x, json.dumps(extra_pnginfo[x]))
+        if prompt is not None:
+            metadata = json.dumps(prompt)
 
-            filename_with_batch_num = filename.replace("%batch_num%", str(batch_number))
-            file = f"{filename_with_batch_num}_{counter:05}_.png"
+        for image in images:
+            array = 255.0 * image.cpu().numpy()
+            img = Image.fromarray(np.clip(array, 0, 255).astype(np.uint8))
+            container.append(img)
 
-            print(os.path.join(full_output_folder, file), file)
-
-            img.save(os.path.join(full_output_folder, file), pnginfo=metadata, compress_level=self.compress_level)
-            images.append(os.path.join(full_output_folder, file))
-
-            results.append({
-                "filename": file,
-                "subfolder": subfolder,
-                "type": self.type
-            })
-            counter += 1
-
-        if self.post(images, metadata, webhook_url, webhook_name):
+        try_post = self.post(container, metadata, webhook_url, webhook_name)
+        if try_post:
             print(f"Image sent to discord")
             return ("Yay! You did it!", )
 
