@@ -86,4 +86,12 @@ class SendToWebhook:
 
         if self.post(images, metadata, webhook_url, webhook_name) return ("Yay! You did it!", )
         return  ("Failed :(", )
-    
+
+# Add this new node to the dictionary of all nodes
+NODE_CLASS_MAPPINGS = {
+    "SendToWebhook": SendToWebhook,
+}
+
+NODE_DISPLAY_NAME_MAPPINGS = {
+    "SendToWebhook": "Send Generated Image To Discord Webhook",
+}
