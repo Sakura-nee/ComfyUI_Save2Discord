@@ -34,13 +34,12 @@ class SendToWebhook:
     FUNCTION = "save_images"
 
     def post(self, image_paths, metadata, webhook_url: str, name: str = "ComfyUI"):
-        print(f"{image_paths}")
         try:
             msg_content = f"```{metadata}```"
             files = {}
             for i, image in enumerate(image_paths):
                 image_bytes = io.BytesIO()
-                image.save(image_bytes, format='PNG')
+                image.save(image_bytes, format='PNG', pnginfo=metadata, compress_level=self.compress_level)
                 image_bytes.seek(0)
                 files[f"image{i+1}"] = (f"image{i+1}.png", image_bytes, 'image/png')
 
@@ -64,7 +63,7 @@ class SendToWebhook:
         container = []
 
         if prompt is not None:
-            metadata = json.dumps(prompt, indent=2)
+            metadata = json.dumps(prompt)
 
         for image in images:
             array = 255.0 * image.cpu().numpy()
