@@ -31,8 +31,8 @@ class SendToWebhook:
                     },
                 "optional":
                     {
-                        "positive": ("STRING", {"default": "None"}),
-                        "negative": ("STRING", {"default": "None"}),
+                        "positive": ("STRING", ),
+                        "negative": ("STRING", )
                     }
                 }
     
