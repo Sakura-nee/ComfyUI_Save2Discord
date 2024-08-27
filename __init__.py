@@ -36,6 +36,7 @@ class SendToWebhook:
     def post(self, image_paths, metadata, webhook_url: str, name: str = "ComfyUI"):
         try:
             msg_content = f"```{metadata}```"
+            print(msg_content)
             files = {}
             for i, image in enumerate(image_paths):
                 image_bytes = io.BytesIO()
@@ -44,7 +45,7 @@ class SendToWebhook:
                 files[f"image{i+1}"] = (f"image{i+1}.png", image_bytes, 'image/png')
 
             payload_data = {
-                'content': msg_content,
+                'content': None,
                 'username': name,
             }
 
