@@ -41,8 +41,8 @@ class SendToWebhook:
 
     def post(self, image_paths, metadata, webhook_url: str, name: str = "ComfyUI"):
         try:
-            msg_content = f"```{metadata}```"
-            print(msg_content)
+            msg_content = f"```json\n{metadata}```"
+
             files = {}
             for i, image in enumerate(image_paths):
                 image_bytes = io.BytesIO()
@@ -51,7 +51,7 @@ class SendToWebhook:
                 files[f"image{i+1}"] = (f"image{i+1}.png", image_bytes, 'image/png')
 
             payload_data = {
-                'content': None,
+                'content': msg_content,
                 'username': name,
             }
 
@@ -71,7 +71,7 @@ class SendToWebhook:
         container = []
 
         if positive is not None and negative is not None:
-            metadata = json.dumps({ "positive": positive, "negative": negative })
+            metadata = json.dumps({ "positive": positive, "negative": negative }, indent=4)
 
         for image in images:
             array = 255.0 * image.cpu().numpy()
