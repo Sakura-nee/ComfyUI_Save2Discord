@@ -21,8 +21,8 @@ class SendToWebhook:
         return {"required":
                     {
                         "images": ("IMAGE", ),
-                        "positive": ("STRING", {"multiline": True, "dynamicPrompts": False}),
-                        "negative": ("STRING", {"multiline": True, "dynamicPrompts": False}),
+                        "positive": ("STRING", {"multiline": True, "dynamicPrompts": True}),
+                        "negative": ("STRING", {"multiline": True, "dynamicPrompts": True}),
                         "webhook_name": ("STRING", {"default": "ComfyUI"}),
                         "webhook_url": ("STRING", {"default": "https://discord.com/api/webhooks/YOUR_WEBHOOK_HASH"}),
                     },
