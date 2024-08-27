@@ -24,7 +24,16 @@ class SendToWebhook:
                         "webhook_name": ("STRING", {"default": "ComfyUI"}),
                         "webhook_url": ("STRING", {"default": "https://discord.com/api/webhooks/YOUR_WEBHOOK_HASH"}),
                     },
-                    "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
+                "hidden":
+                    {
+                        "prompt": "PROMPT",
+                        "extra_pnginfo": "EXTRA_PNGINFO"
+                    },
+                "optional":
+                    {
+                        "positive": ("STRING", {"default": "None"}),
+                        "negative": ("STRING", {"default": "None"}),
+                    }
                 }
     
     RETURN_TYPES = ()
@@ -60,12 +69,12 @@ class SendToWebhook:
             print(err)
             return False
 
-    def save_images(self, images, webhook_name, webhook_url, prompt=None, extra_pnginfo=None):
+    def save_images(self, images, webhook_name, webhook_url, prompt=None, extra_pnginfo=None, positive=None, negative=None):
         metadata = None
         container = []
 
-        if prompt is not None:
-            metadata = json.dumps(prompt)
+        if positive is not None and negative is not None:
+            metadata = json.dumps({ "positive": positive, "negative": negative })
 
         for image in images:
             array = 255.0 * image.cpu().numpy()
